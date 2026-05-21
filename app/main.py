@@ -1,14 +1,12 @@
 from fastapi import FastAPI
 
+from app.api.routes.health import router as health_router
+
+
 app = FastAPI(
     title='LLM Evaluation Platform',
     version='0.1.0'
 )
 
 
-@app.get('/health')
-def health_check():
-    return {
-        'status': 'ok',
-        'service': 'llm-evaluation-platform'
-    }
+app.include_router(health_router)
