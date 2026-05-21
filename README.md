@@ -76,28 +76,41 @@ sequenceDiagram
 - Python
 - FastAPI
 - PostgreSQL
+- SQLite
 - SQLAlchemy / Alembic
 - Pytest
 - Docker / Docker Compose
 - OpenTelemetry
 - GitHub Actions
+- Ruff
 
 ## Repository Status
 
-This repository is in early-stage foundation mode. The first milestone focuses on backend structure, data modeling, local development, and CI.
+This repository is currently focused on backend foundations, reproducibility, domain modeling, migration infrastructure, and evaluation architecture.
 
 ## Roadmap
 
 - [x] Initialize repository structure
 - [x] Add README, license, CI, and Docker foundation
-- [ ] Add FastAPI application foundation
-- [ ] Add PostgreSQL integration
-- [ ] Add prompt registry models and endpoints
-- [ ] Add dataset registry models and endpoints
+- [x] Add FastAPI application foundation
+- [x] Add Ruff quality checks
+- [x] Add Docker Compose local development
+- [x] Add initial modular backend structure
+- [x] Add domain model architecture
+- [x] Add reproducibility-focused evaluation entities
+- [x] Add Alembic migration foundation
+- [x] Add initial domain documentation
+- [ ] Add initial database migration
+- [ ] Add database bootstrap validation
+- [ ] Add Pydantic schemas
+- [ ] Add CRUD services
+- [ ] Add prompt registry endpoints
+- [ ] Add dataset registry endpoints
 - [ ] Add evaluation run lifecycle
-- [ ] Add LLM provider adapter
+- [ ] Add LLM provider adapter layer
 - [ ] Add metrics engine
 - [ ] Add OpenTelemetry instrumentation
+- [ ] Add structured logging and trace correlation
 - [ ] Add Grafana/Prometheus observability stack
 
 ## Engineering Principles
