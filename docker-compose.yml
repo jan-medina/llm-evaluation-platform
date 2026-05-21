@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    container_name: llm-evaluation-platform-api
+    ports:
+      - '8000:8000'
+    environment:
+      - APP_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/llm_eval
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    container_name: llm-evaluation-platform-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: llm_eval
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
