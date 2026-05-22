@@ -26,6 +26,10 @@ jobs:
         run: |
           ruff check .
 
+      - name: Validate Alembic migrations
+        run: |
+          alembic upgrade head
+
       - name: Run tests
         run: |
           pytest
