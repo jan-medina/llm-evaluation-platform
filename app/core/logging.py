@@ -49,10 +49,12 @@ def setup_logging() -> None:
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(JsonLogFormatter())
 
+    log_level = getattr(settings, 'log_level', 'INFO')
+
     root_logger = logging.getLogger()
     root_logger.handlers.clear()
     root_logger.addHandler(handler)
-    root_logger.setLevel(settings.log_level.upper())
+    root_logger.setLevel(log_level.upper())
 
     logging.getLogger('uvicorn.access').handlers.clear()
 
