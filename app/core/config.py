@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     database_url: str = 'sqlite:///./local.db'
     api_host: str = '0.0.0.0'
     api_port: int = 8000
+    log_level: str = 'INFO'
 
     class Config:
         env_file = '.env'
