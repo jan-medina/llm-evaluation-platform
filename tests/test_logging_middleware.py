@@ -4,40 +4,23 @@ from uuid import uuid4
 from fastapi import FastAPI
 from fastapi import Request
 from fastapi.responses import JSONResponse
+from fastapi.testclient import TestClient
 
-from app.api.routes.health import router as health_router
 from app.core.logging import get_logger
 from app.core.logging import request_id_context
-from app.core.logging import setup_logging
+from app.main import app
 
-setup_logging()
 logger = get_logger(__name__)
 
-app = FastAPI(
-    title='LLM Evaluation Platform',
-    version='0.1.0',
-)
 
-
-@app.middleware('http')
-async def request_logging_middleware(request: Request, call_next):
+async def test_request_logging_middleware(request: Request, call_next):
     request_id = request.headers.get('X-Request-ID', str(uuid4()))
     token = request_id_context.set(request_id)
     start_time = perf_counter()
 
     try:
         response = await call_next(request)
-        duration_ms = round((perf_counter() - start_time) * 1000, 2)
         response.headers['X-Request-ID'] = request_id
-
-        logger.info(
-            'request_completed method=%s path=%s status_code=%s duration_ms=%s',
-            request.method,
-            request.url.path,
-            response.status_code,
-            duration_ms,
-        )
-
         return response
     except Exception:
         duration_ms = round((perf_counter() - start_time) * 1000, 2)
@@ -47,7 +30,6 @@ async def request_logging_middleware(request: Request, call_next):
             request.url.path,
             duration_ms,
         )
-
         return JSONResponse(
             status_code=500,
             content={
@@ -60,4 +42,29 @@ async def request_logging_middleware(request: Request, call_next):
         request_id_context.reset(token)
 
 
-app.include_router(health_router)
+
+def test_request_id_header_is_returned() -> None:
+    client = TestClient(app)
+
+    response = client.get('/health', headers={'X-Request-ID': 'test-request-id'})
+
+    assert response.status_code == 200
+    assert response.headers['X-Request-ID'] == 'test-request-id'
+
+
+
+def test_request_id_header_is_returned_on_server_error() -> None:
+    test_app = FastAPI()
+    test_app.middleware('http')(test_request_logging_middleware)
+
+    @test_app.get('/error')
+    def raise_test_error():
+        raise RuntimeError('test error')
+
+    client = TestClient(test_app, raise_server_exceptions=False)
+
+    response = client.get('/error', headers={'X-Request-ID': 'error-request-id'})
+
+    assert response.status_code == 500
+    assert response.headers['X-Request-ID'] == 'error-request-id'
+    assert response.json()['request_id'] == 'error-request-id'
