@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from fastapi import FastAPI
 from fastapi import Request
+from fastapi.responses import JSONResponse
 
 from app.api.routes.health import router as health_router
 from app.core.logging import get_logger
@@ -46,7 +47,15 @@ async def request_logging_middleware(request: Request, call_next):
             request.url.path,
             duration_ms,
         )
-        raise
+
+        return JSONResponse(
+            status_code=500,
+            content={
+                'detail': 'Internal server error',
+                'request_id': request_id,
+            },
+            headers={'X-Request-ID': request_id},
+        )
     finally:
         request_id_context.reset(token)
 
